@@ -22,21 +22,22 @@
             <div class="col-lg-12">
                 <div class="row" style="position: sticky; top: 0;z-index: 1; background-color: rgb(250, 250, 250)">
                     <hr>
-                    <div class="col-lg-6 mb-3">
+                    <div class="col-lg-8 mb-3">
                         <a href="{{ route('articles.history') }}" class="btn btn-link my-3 ">Historique</a>
                         <a href="{{ route('articles.cantine') }}" class="btn btn-link my-3 " data-bs-toggle="modal"
                             data-bs-target="#verticalycentered">Importer les choix</a>
                         <a href="{{ route('articles.archives') }}" class="btn btn-link my-3 ">Archives</a>
                         <a href="{{ route('articles.create') }}" class="btn btn-link my-3 ">Nouvelle employée</a>
                         <a href="{{ route('articles.cantine') }}" class="btn btn-link my-3 ">Cantine</a>
+                        @error('file')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-
                     <div class="col">
                         <form action="{{route('cantines.cherche-liste')}}" method="get" class="row"
                             enctype="multipart/form-data">
                             @csrf
                             @method('get')
-                            <div class="col-lg-2"></div>
                             <div class="col-lg-4">
                                 <label for="l">Cantine</label>
                                 <select name="cadre" id="c" class="form-control text-center my-2"
@@ -52,7 +53,7 @@
                                     placeholder="Matricule" onkeyup="getValue(this.value)">
                             </div>
                             <div class="col">
-                                <button type="submit" class="btn btn-sm btn-info mt-4">Afficher</button>
+                                <button type="submit" class="btn btn-info" style="margin-top: 0.81cm">Rechercher</button>
                             </div>
                         </form>
                     </div>
@@ -81,8 +82,9 @@
                                     }}
                                 </td>
                                 <td class="justify-content-center d-flex"><img
-                                        src="{{asset('images/' . trim($article->matricule) . '.png')}}" class="img-fluid"
-                                        alt="{{$article->photo}}" width="30%" height="20%" style="float: right"></td>
+                                        src="{{asset('images/' . trim($article->matricule) . '.png')}}"
+                                        class="img-fluid" alt="{{$article->photo}}" width="30%" height="20%"
+                                        style="float: right"></td>
                                 <td class="text-center">
                                     @if($article->cadre == 1)
                                     <div>
@@ -95,7 +97,8 @@
                                         @csrf
                                         @method('POST')
                                         <input type="hidden" name="matricule" value="{{$article->matricule}}">
-                                        <button type="submit" class="btn btn-sm btn-info mt-1" title="Afficher les choix effectuer"
+                                        <button type="submit" class="btn btn-sm btn-info mt-1"
+                                            title="Afficher les choix effectuer"
                                             style="width: 87.09px">Afficher</button>
                                     </form><br>
                                     @endif

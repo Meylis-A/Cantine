@@ -48,7 +48,7 @@
                                     </div>
                                     <div class="col">
                                         <div class="my-3">
-                                            <button type="submit" class="btn btn-info btn-sm mt-2">Afficher</button>
+                                            <button type="submit" class="btn btn-info mt-2">Afficher</button>
                                         </div>
                                     </div>
                                 </div>
@@ -64,11 +64,11 @@
                                 <div id="alert"></div>
                             </div>
                             <div class="col">
-                                <input type="hidden" name="dateA" value="{{$dateD}}">
-                                <input type="hidden" name="dateB" value="{{$dateF}}">
+                                <input type="hidden" name="dateA" value="{{$dateD}}" id="dateAE">
+                                <input type="hidden" name="dateB" value="{{$dateF}}" id="dateBE">
                                 <input type="hidden" name="cadre" value="{{$cadre}}" id="cadreGroupe">
-                                <button type="submit" class="btn btn-sm mt-1"
-                                    style="float: right; margin-right: 30px; background-color: cadetblue; color:white"
+                                <button type="submit" class="btn btn-link mt-4"
+                                    style="float: right; margin-right: 30px; background-color: rgb(245, 239, 239);"
                                     title="Exporter en Pdf">Exporter</button>
                             </div>
                         </form>
@@ -152,16 +152,17 @@
         // Récupérez le formulaire par son ID
         var formulaire = document.getElementById('formExport');
         var c = document.getElementById("cadreGroupe").value;
+        var dae = document.getElementById("dateAE").value;
+        var dbe = document.getElementById("dateBE").value;
         // Ajoutez un gestionnaire d'événements pour l'événement de soumission du formulaire
-        formulaire.addEventListener('submit', function (event) {
-            // Placez ici votre condition pour empêcher la soumission
-            if (c == "2") {
+        formulaire.addEventListener('submit', function (event) {            
+            if (c == "2" || dbe == "") {
                 // Annulez la soumission du formulaire
                 event.preventDefault();
-                document.getElementById("alert").innerHTML = "Grouper ou mettez une intervale de date avant d'exporter"
+                document.getElementById("alert").innerHTML = "Grouper par cantine et mettez une intervalle de date avant d'exporter s'il vous plait."
                 setTimeout(function () {
                     document.getElementById("alert").innerHTML = ""
-                }, 2000);
+                }, 3000);
             }
         });
 

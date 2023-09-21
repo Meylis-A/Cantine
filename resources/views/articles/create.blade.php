@@ -51,7 +51,10 @@
                     </div>
                     <div class="form-group">
                         <label for="photo">Photo</label>
-                        <input type="file" name="photo" id="photo" class="form-control" required>
+                        <input type="file" name="photo" id="photo" class="form-control" accept=".png" required><br>
+                        @error('photo')
+                        <div class="alert alert-danger">{{ $message }}</div>
+                        @enderror
                     </div>
                     <a href="{{route('articles.index')}}" class="btn btn-primary  mt-3 btn-sm">Annuler</a>
                     <button type="submit" class="btn btn-success mt-3 btn-sm">Enregistrer</button>
