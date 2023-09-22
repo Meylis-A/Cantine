@@ -87,8 +87,12 @@ class ArticlesController extends Controller
         $personnelle->cadre = $request->cadre;
 
         $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // Vous pouvez ajuster les règles de validation selon vos besoins.
+            'photo' => 'required|image|mimes:png|max:2048',
+        ], [
+            'photo.required' => 'Le champ photo est requis.',
+            'photo.image' => 'Le fichier doit être une image.',
+            'photo.mimes' => 'Le format de l\'image doit être PNG.',
+            'photo.max' => 'La taille de l\'image ne peut pas dépasser 2048 Ko (2 Mo).',
         ]);
 
         if ($request->hasFile('photo')) {

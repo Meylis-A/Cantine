@@ -47,13 +47,11 @@ class ExcelExportController extends Controller
         } elseif ($cadre == 1) {
             $c = 'E';
             foreach ($data['history'] as $elem) {
-                $sheet->setCellValue($c . '1', $elem->date);
+                $sheet->setCellValue($c . '1', Carbon::parse($elem->date)->format('m/d/Y'));
                 $c++;
             }
         }
 
-
-        // Itérez sur les données récupérées de la requête
         $row = 2; // Ligne où commencer l'insertion de données 
         $ca = 'E';
         if ($cadre == 0) {
@@ -62,7 +60,7 @@ class ExcelExportController extends Controller
                 $sheet->setCellValue('B' . $row, $elem->matricule);
                 $sheet->setCellValue('C' . $row, $elem->nom);
                 $sheet->setCellValue('D' . $row, $elem->prenom);
-                $sheet->setCellValue('E' . $row, $elem->date);
+                $sheet->setCellValue('E' . $row, Carbon::parse($elem->date)->format('m/d/Y'));
                 $sheet->setCellValue('F' . $row, ($elem->dejeuner ? "1" : "0"));
                 $sheet->setCellValue('G' . $row, ($elem->diner ? "1" : "0"));
                 $sheet->setCellValue('H' . $row, ($elem->collation ? "1" : "0"));
@@ -123,7 +121,7 @@ class ExcelExportController extends Controller
 
         // Définissez les en-têtes pour le téléchargement du fichier
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="export.xlsx"');
+        header('Content-Disposition: attachment; filename="' . $data['filename'] . '.xlsx"');
 
         // Écrivez le contenu dans la sortie
         $writer->save('php://output');
@@ -133,13 +131,18 @@ class ExcelExportController extends Controller
     {
         $history = null;
         $personelles = null;
-
+        $nameXlsx = null;
         $history = History::query();
         $personelles = History::query();
 
         if ($dateA && $dateB) {
             $history->whereBetween('date', [$dateA, $dateB]);
             $personelles->whereBetween('date', [$dateA, $dateB])->distinct('matricule');
+
+            $dateA = substr($dateA, 0, 10);
+            $dateB = substr($dateB, 0, 10);
+
+            $nameXlsx .= $dateA . "_-_" . $dateB;
         } elseif ($dateA) {
             $history->where('date', '>=', $dateA);
             $personelles->whereDate('date', '>=', $dateA)->distinct('matricule');
@@ -147,6 +150,7 @@ class ExcelExportController extends Controller
         if ($cadre != '2') {
             $history->where('cadre', $cadre)->orderBy('date', 'asc');
             $personelles->where('cadre', $cadre);
+            $nameXlsx .= ($cadre == 1 ? "-CANTINE_1" : "-CANTINE_2");
         }
 
         $history = $history->get();
@@ -163,7 +167,8 @@ class ExcelExportController extends Controller
 
         $data = [
             'history' => $history,
-            'perso' => $personelles
+            'perso' => $personelles,
+            'filename' => $nameXlsx
         ];
 
         return $data;
@@ -176,7 +181,10 @@ class ExcelExportController extends Controller
         // Validez le formulaire et le fichier envoyé
         $validator = Validator::make($request->all(), [
             'file' => 'required|mimes:xlsx',
+        ], [
+            'photo.mimes' => 'Le format du fichier doit être XLSX.',
         ]);
+
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
